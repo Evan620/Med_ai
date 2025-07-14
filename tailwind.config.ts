@@ -24,8 +24,11 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				surface: 'hsl(var(--surface))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
+					light: 'hsl(var(--primary-light))',
+					dark: 'hsl(var(--primary-dark))',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
@@ -52,6 +55,18 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				medical: {
+					success: 'hsl(var(--medical-success))',
+					warning: 'hsl(var(--medical-warning))',
+					info: 'hsl(var(--medical-info))',
+					error: 'hsl(var(--medical-error))'
+				},
+				'hover-overlay': 'hsl(var(--hover-overlay))',
+				'selection-bg': 'hsl(var(--selection-bg))',
+				'pdf-bg': 'hsl(var(--pdf-bg))',
+				'highlight-yellow': 'hsl(var(--highlight-yellow))',
+				'highlight-blue': 'hsl(var(--highlight-blue))',
+				'highlight-green': 'hsl(var(--highlight-green))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
