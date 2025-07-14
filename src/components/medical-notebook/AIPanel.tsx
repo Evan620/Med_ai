@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { X, Sparkles, Send, BookOpen, Lightbulb, Copy } from "lucide-react";
+import { X, Sparkles, Send, BookOpen, Lightbulb, Copy, Stethoscope, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { aiService } from "@/services/aiService";
 
 interface AIPanelProps {
   highlightedText: string;
@@ -16,69 +17,62 @@ export const AIPanel = ({ highlightedText, onClose, onInsertToNote }: AIPanelPro
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleAIAction = async (action: "summarize" | "explain" | "custom") => {
+  const handleAIAction = async (action: "summarize" | "explain" | "custom" | "differential" | "clinical-note") => {
     setIsLoading(true);
-    
-    // Simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    let response = "";
-    
-    switch (action) {
-      case "summarize":
-        response = `**AI Summary:**
 
-The highlighted text discusses the cardiovascular system, focusing on:
-• Heart anatomy with four chambers (2 atria, 2 ventricles)
-• Blood circulation through pulmonary and systemic pathways
-• Cardiac cycle phases: systole and diastole
-• Function of each chamber in blood circulation
+    try {
+      let result;
 
-Key concept: The heart serves as a dual pump system - right side for pulmonary circulation, left side for systemic circulation.`;
-        break;
-        
-      case "explain":
-        response = `**AI Detailed Explanation:**
+      switch (action) {
+        case "summarize":
+          result = await aiService.summarizeText(highlightedText);
+          break;
 
-**Cardiovascular System Deep Dive:**
+        case "explain":
+          result = await aiService.explainConcept(highlightedText);
+          break;
 
-The cardiovascular system is essentially a closed-loop transportation network. Here's how it works:
+        case "custom":
+          result = await aiService.answerQuestion(customPrompt, highlightedText);
+          break;
 
-**Heart Chambers Function:**
-- **Right Atrium**: Collection point for deoxygenated blood from body tissues
-- **Right Ventricle**: Pumps blood to lungs for oxygenation (pulmonary circulation)
-- **Left Atrium**: Receives freshly oxygenated blood from lungs
-- **Left Ventricle**: Most muscular chamber, pumps oxygenated blood throughout body
+        case "differential":
+          result = await aiService.reviewDifferentialDiagnosis(highlightedText);
+          break;
 
-**Clinical Significance:**
-Understanding this anatomy is crucial for diagnosing conditions like:
-- Heart valve disorders
-- Congenital heart defects
-- Heart failure pathophysiology
+        case "clinical-note":
+          result = await aiService.generateClinicalNote(highlightedText);
+          break;
 
-**Study Tip:** Remember the flow: Body → RA → RV → Lungs → LA → LV → Body`;
-        break;
-        
-      case "custom":
-        response = `**AI Response to: "${customPrompt}"**
+        default:
+          result = { content: "Unknown action", success: false };
+      }
 
-Based on your question about the cardiovascular content, here's a comprehensive answer:
-
-The relationship between cardiac anatomy and clinical practice is fundamental to medical diagnosis. When examining patients with cardiovascular symptoms, understanding the normal flow patterns helps identify where problems might occur.
-
-For example, if a patient presents with shortness of breath, knowing that the right ventricle pumps to the lungs helps you consider pulmonary circulation issues, while left-sided symptoms might indicate systemic circulation problems.
-
-This anatomical foundation supports clinical reasoning in cardiology.`;
-        break;
+      if (result.success) {
+        setAiResponse(result.content);
+        toast({
+          title: "Dr. Mitchell's Response Ready",
+          description: "Professional medical analysis completed. Click 'Insert to Note' to add to your notes.",
+        });
+      } else {
+        setAiResponse(`**Error:** ${result.error || 'Failed to get AI response. Please try again.'}`);
+        toast({
+          title: "AI Service Error",
+          description: "There was an issue connecting to the AI service. Please check your connection and try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('AI Action Error:', error);
+      setAiResponse("**Error:** Unable to process request. Please try again.");
+      toast({
+        title: "Request Failed",
+        description: "Unable to process your request. Please try again.",
+        variant: "destructive",
+      });
     }
-    
-    setAiResponse(response);
+
     setIsLoading(false);
-    
-    toast({
-      title: "AI Response Generated",
-      description: "Click 'Insert to Note' to add this to your notes.",
-    });
   };
 
   const handleInsertToNote = () => {
@@ -103,8 +97,9 @@ This anatomical foundation supports clinical reasoning in cardiology.`;
       {/* Panel Header */}
       <div className="h-12 border-b border-border flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span className="font-medium text-foreground">AI Assistant</span>
+          <Stethoscope className="h-4 w-4 text-primary" />
+          <span className="font-medium text-foreground">Dr. Sarah Mitchell, MD</span>
+          <span className="text-xs text-muted-foreground">30 years experience</span>
         </div>
         <Button size="sm" variant="ghost" onClick={onClose}>
           <X className="h-4 w-4" />
@@ -122,9 +117,9 @@ This anatomical foundation supports clinical reasoning in cardiology.`;
         )}
 
         {/* Quick AI Actions */}
-        <div className="flex gap-2">
-          <Button 
-            size="sm" 
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            size="sm"
             onClick={() => handleAIAction("summarize")}
             disabled={isLoading}
             className="flex-1"
@@ -132,8 +127,8 @@ This anatomical foundation supports clinical reasoning in cardiology.`;
             <BookOpen className="h-3 w-3 mr-1" />
             Summarize
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             onClick={() => handleAIAction("explain")}
             disabled={isLoading}
             className="flex-1"
@@ -141,22 +136,41 @@ This anatomical foundation supports clinical reasoning in cardiology.`;
             <Lightbulb className="h-3 w-3 mr-1" />
             Explain
           </Button>
+          <Button
+            size="sm"
+            onClick={() => handleAIAction("differential")}
+            disabled={isLoading}
+            className="flex-1"
+          >
+            <Stethoscope className="h-3 w-3 mr-1" />
+            Differential
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => handleAIAction("clinical-note")}
+            disabled={isLoading}
+            className="flex-1"
+          >
+            <FileText className="h-3 w-3 mr-1" />
+            Clinical Note
+          </Button>
         </div>
 
         {/* Custom Prompt */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Ask AI:</label>
+          <label className="text-sm font-medium text-foreground">Ask Dr. Mitchell:</label>
           <div className="flex gap-2">
             <Textarea
-              placeholder="Ask anything about the selected text..."
+              placeholder="Ask any medical question about the selected text or general medical inquiry..."
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
               className="flex-1 min-h-[60px] text-sm"
             />
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               onClick={() => handleAIAction("custom")}
               disabled={isLoading || !customPrompt.trim()}
+              title="Get professional medical insight"
             >
               <Send className="h-3 w-3" />
             </Button>
@@ -168,7 +182,7 @@ This anatomical foundation supports clinical reasoning in cardiology.`;
           <div className="bg-muted p-3 rounded-md">
             <div className="flex items-center gap-2">
               <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
-              <span className="text-sm text-muted-foreground">AI is thinking...</span>
+              <span className="text-sm text-muted-foreground">Dr. Mitchell is analyzing...</span>
             </div>
           </div>
         )}

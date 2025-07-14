@@ -1,8 +1,21 @@
 import { useState, useRef } from "react";
-import { FileText, Upload, Plus, Search, Folder, ChevronLeft, ChevronRight } from "lucide-react";
+import { FileText, Upload, Plus, Search, Folder, ChevronLeft, ChevronRight, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+
+interface NoteData {
+  id: string;
+  title: string;
+  content: string;
+  lastModified: string;
+}
+
+interface SidebarNote {
+  id: string;
+  title: string;
+  lastModified: string;
+}
 
 interface SidebarProps {
   selectedNote: string | null;
@@ -11,15 +24,29 @@ interface SidebarProps {
   onSelectPDF: (pdfId: string) => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  onCreateNewNote?: () => void;
+  notesData: Record<string, NoteData>;
+  onCreateNote: (noteId: string) => void;
+  onDeleteNote: (noteId: string) => void;
 }
 
-export const Sidebar = ({ selectedNote, onSelectNote, selectedPDF, onSelectPDF, isCollapsed, onToggleCollapse }: SidebarProps) => {
+export const Sidebar = ({ selectedNote, onSelectNote, selectedPDF, onSelectPDF, isCollapsed, onToggleCollapse, onCreateNewNote, notesData, onCreateNote, onDeleteNote }: SidebarProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [notes, setNotes] = useState([
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  // Convert notesData to sidebar format and include default notes
+  const notes: SidebarNote[] = [
+    // Default notes (these could be removed if you don't want them)
     { id: "1", title: "Cardiovascular System", lastModified: "2 hours ago" },
     { id: "2", title: "Respiratory Physiology", lastModified: "1 day ago" },
     { id: "3", title: "Neuroanatomy Notes", lastModified: "3 days ago" },
-  ]);
+    // Add user-created notes from notesData
+    ...Object.values(notesData).map(note => ({
+      id: note.id,
+      title: note.title,
+      lastModified: note.lastModified
+    }))
+  ];
   const [pdfs, setPdfs] = useState([
     { id: "1", title: "Gray's Anatomy - Chapter 4", size: "15.2 MB" },
     { id: "2", title: "Physiology Textbook", size: "23.1 MB" },
@@ -55,17 +82,43 @@ export const Sidebar = ({ selectedNote, onSelectNote, selectedPDF, onSelectPDF, 
   };
 
   const createNewNote = () => {
-    const newNote = {
-      id: Date.now().toString(),
-      title: "Untitled Note",
-      lastModified: "now"
-    };
-    setNotes(prev => [newNote, ...prev]);
-    onSelectNote(newNote.id);
+    // Save current note before creating new one
+    if (onCreateNewNote) {
+      onCreateNewNote();
+    }
+
+    const newNoteId = Date.now().toString();
+    onCreateNote(newNoteId);
+    onSelectNote(newNoteId);
     toast({
       title: "New Note Created",
       description: "A new note has been created.",
     });
+  };
+
+  const handleDeleteNote = (noteId: string, noteTitle: string) => {
+    onDeleteNote(noteId);
+    setDeleteConfirmId(null);
+
+    // If the deleted note was selected, clear selection
+    if (selectedNote === noteId) {
+      onSelectNote("");
+    }
+
+    toast({
+      title: "Note Deleted",
+      description: `"${noteTitle}" has been deleted.`,
+    });
+  };
+
+  const confirmDelete = (noteId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent note selection
+    setDeleteConfirmId(noteId);
+  };
+
+  const cancelDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeleteConfirmId(null);
   };
 
   return (
@@ -131,11 +184,58 @@ export const Sidebar = ({ selectedNote, onSelectNote, selectedPDF, onSelectPDF, 
                 {notes.map((note) => (
                   <div
                     key={note.id}
-                    className={`notion-block ${selectedNote === note.id ? 'bg-selection-bg' : ''}`}
+                    className={`notion-block ${selectedNote === note.id ? 'bg-selection-bg' : ''} relative group`}
                     onClick={() => onSelectNote(note.id)}
                   >
-                    <div className="font-medium text-sm text-foreground">{note.title}</div>
-                    <div className="text-xs text-muted-foreground">{note.lastModified}</div>
+                    {deleteConfirmId === note.id ? (
+                      // Delete confirmation dialog
+                      <div className="flex items-center justify-between p-2 bg-destructive/10 border border-destructive/20 rounded">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-destructive">Delete this note?</div>
+                          <div className="text-xs text-muted-foreground">This action cannot be undone</div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteNote(note.id, note.title);
+                            }}
+                            className="h-6 px-2 text-xs"
+                          >
+                            Delete
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={cancelDelete}
+                            className="h-6 px-2 text-xs"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      // Normal note display
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm text-foreground truncate">{note.title}</div>
+                          <div className="text-xs text-muted-foreground">{note.lastModified}</div>
+                        </div>
+                        {/* Only show delete button for user-created notes (not default ones) */}
+                        {notesData[note.id] && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => confirmDelete(note.id, e)}
+                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

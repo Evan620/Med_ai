@@ -1,4 +1,16 @@
-# Welcome to your Lovable project
+# MedNote AI - Intelligent Medical Note-Taking Platform
+
+MedNote AI is a comprehensive medical education platform that combines AI-powered analysis with intuitive note-taking tools, designed specifically for medical students, residents, and healthcare professionals.
+
+## Features
+
+- **AI-Powered Medical Analysis**: Get expert insights from Dr. Sarah Mitchell, our AI medical consultant
+- **Smart Note Taking**: Create, organize, and enhance medical notes with AI suggestions
+- **PDF Integration**: Upload medical textbooks and research papers for AI-powered analysis
+- **YouTube Video Analysis**: Analyze medical educational videos and generate comprehensive summaries
+- **User Authentication**: Secure login and registration system
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Dark/Light Theme**: Customizable interface with theme preferences
 
 ## Project info
 
@@ -32,9 +44,26 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Configure AI API (Optional)
+# Copy the environment template
+cp .env.example .env.local
+# Edit .env.local and add your OpenRouter API key
+# Get your API key from: https://openrouter.ai/keys
+
+# Step 5: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
+
+## AI Configuration
+
+MedNote AI uses OpenRouter for AI-powered medical analysis. The application works in demo mode without an API key, but for full functionality:
+
+1. Get an API key from [OpenRouter](https://openrouter.ai/keys)
+2. Copy `.env.example` to `.env.local`
+3. Replace `your-api-key-here` with your actual API key
+4. Restart the development server
+
+**Note**: The application will automatically fall back to demo mode if no valid API key is provided.
 
 **Edit a file directly in GitHub**
 
