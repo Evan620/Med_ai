@@ -6,10 +6,34 @@ export const Header = () => {
   const { toast } = useToast();
 
   const handleDownload = () => {
-    toast({
-      title: "Download initiated",
-      description: "Your notes will be downloaded shortly.",
-    });
+    // Get note content from the editor
+    const noteContent = document.querySelector('.note-editor') as HTMLTextAreaElement;
+    const noteTitle = document.querySelector('input[placeholder="Note title..."]') as HTMLInputElement;
+    
+    if (noteContent && noteContent.value.trim()) {
+      const title = noteTitle?.value || 'Medical Note';
+      const content = noteContent.value;
+      const blob = new Blob([`# ${title}\n\n${content}`], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download completed",
+        description: "Your notes have been downloaded successfully.",
+      });
+    } else {
+      toast({
+        title: "No content to download",
+        description: "Please add some notes before downloading.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleShare = () => {

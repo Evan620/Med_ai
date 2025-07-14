@@ -5,12 +5,24 @@ import { NoteEditor } from "@/components/medical-notebook/NoteEditor";
 import { AIPanel } from "@/components/medical-notebook/AIPanel";
 import { Header } from "@/components/medical-notebook/Header";
 import { Toaster } from "@/components/ui/toaster";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Send } from "lucide-react";
 
 const Index = () => {
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
   const [selectedPDF, setSelectedPDF] = useState<string | null>(null);
   const [aiPanelVisible, setAiPanelVisible] = useState(false);
   const [highlightedText, setHighlightedText] = useState<string>("");
+  const [promptText, setPromptText] = useState<string>("");
+
+  const handleAIPrompt = () => {
+    if (promptText.trim()) {
+      setHighlightedText(promptText);
+      setAiPanelVisible(true);
+      setPromptText("");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-surface flex flex-col">
@@ -56,6 +68,31 @@ const Index = () => {
             )}
           </div>
         </div>
+      </div>
+      
+      {/* AI Prompt Bar */}
+      <div className="h-16 bg-background border-t border-border flex items-center px-6 gap-3">
+        <Input
+          value={promptText}
+          onChange={(e) => setPromptText(e.target.value)}
+          placeholder="Ask AI anything about your medical studies..."
+          className="flex-1"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleAIPrompt();
+            }
+          }}
+        />
+        <Button 
+          onClick={handleAIPrompt}
+          disabled={!promptText.trim()}
+          size="sm"
+          className="gap-2"
+        >
+          <Send className="h-4 w-4" />
+          Ask AI
+        </Button>
       </div>
       
       <Toaster />
