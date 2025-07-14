@@ -15,6 +15,7 @@ const Index = () => {
   const [aiPanelVisible, setAiPanelVisible] = useState(false);
   const [highlightedText, setHighlightedText] = useState<string>("");
   const [promptText, setPromptText] = useState<string>("");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const handleAIPrompt = () => {
     if (promptText.trim()) {
@@ -35,6 +36,8 @@ const Index = () => {
           onSelectNote={setSelectedNote}
           selectedPDF={selectedPDF}
           onSelectPDF={setSelectedPDF}
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
         
         {/* Main content area with split view */}
