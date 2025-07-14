@@ -1,0 +1,8 @@
+# Navigate to your repository
+cd "C:\Users\evano\OneDrive\Desktop\Med AI\Med_AI"
+
+# Remove the lock file
+Remove-Item ".git\refs\remotes\origin\HEAD.lock" -Force
+
+# Now try removing the remote again
+git remote remove origin
