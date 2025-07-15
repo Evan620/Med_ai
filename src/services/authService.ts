@@ -9,6 +9,20 @@ interface User {
   yearOfStudy?: number;
   createdAt: string;
   lastLogin: string;
+  // Additional profile fields
+  displayName?: string;
+  degree?: string;
+  specialty?: string;
+  location?: string;
+  bio?: string;
+  yearsOfExperience?: string;
+  licenseNumber?: string;
+  isVerified?: boolean;
+  showEmail?: boolean;
+  showLocation?: boolean;
+  allowMessages?: boolean;
+  profileImage?: string;
+  credentials?: string;
 }
 
 interface AuthResponse {
@@ -211,6 +225,20 @@ class AuthService {
 
   // Get current user
   getCurrentUser(): User | null {
+    // If currentUser is not set, try to load from localStorage
+    if (!this.currentUser) {
+      try {
+        const authData = localStorage.getItem(this.STORAGE_KEY);
+        if (authData) {
+          const parsed = JSON.parse(authData);
+          if (parsed.user && parsed.expiresAt > new Date().getTime()) {
+            this.currentUser = parsed.user;
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user from storage:', error);
+      }
+    }
     return this.currentUser;
   }
 

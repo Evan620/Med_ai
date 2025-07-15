@@ -5,6 +5,10 @@ import { NoteEditor } from "@/components/medical-notebook/NoteEditor";
 import { AIPanel } from "@/components/medical-notebook/AIPanel";
 import { YouTubeProcessor } from "@/components/medical-notebook/YouTubeProcessor";
 import { Header } from "@/components/medical-notebook/Header";
+import { KnowledgeBank } from "./KnowledgeBank";
+import { NoteView } from "./NoteView";
+import { PublishNote } from "./PublishNote";
+import { UserProfile } from "./UserProfile";
 import { Toaster } from "@/components/ui/toaster";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,6 +46,13 @@ const Index = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(settings.sidebarCollapsed);
+  const [currentView, setCurrentView] = useState<'notebook' | 'knowledge-bank' | 'note-view' | 'publish-note' | 'user-profile'>('notebook');
+  const [selectedKnowledgeNote, setSelectedKnowledgeNote] = useState<string | null>(null);
+  const [selectedKnowledgeNoteData, setSelectedKnowledgeNoteData] = useState<any>(null);
+  const [noteToPublish, setNoteToPublish] = useState<{ title: string; content: string } | null>(null);
+  const [publishedNotes, setPublishedNotes] = useState<any[]>([]);
+
+  // Note: publishedNotes state is now legacy - all notes are managed by globalNotesService
 
   // Resizable panels state
   const [pdfWidth, setPdfWidth] = useState(50); // PDF takes 50% width initially
@@ -49,6 +60,9 @@ const Index = () => {
 
   // Store note data in memory (in a real app, this would be in a database or localStorage)
   const [notesData, setNotesData] = useState<Record<string, NoteData>>({});
+
+  // Store PDF files
+  const [pdfFiles, setPdfFiles] = useState<Record<string, File>>({});
 
   // Reference to the NoteEditor to access its save function
   const noteEditorRef = useRef<NoteEditorRef>(null);
@@ -133,6 +147,77 @@ const Index = () => {
     if (selectedNote === noteId) {
       setSelectedNote(null);
     }
+  };
+
+  // Function to handle PDF file upload
+  const handlePDFUpload = (file: File) => {
+    const pdfId = Date.now().toString();
+    setPdfFiles(prev => ({
+      ...prev,
+      [pdfId]: file
+    }));
+    return pdfId;
+  };
+
+  // Function to get the current PDF file
+  const getCurrentPDFFile = (): File | undefined => {
+    return selectedPDF ? pdfFiles[selectedPDF] : undefined;
+  };
+
+  // Function to get current PDF text content
+  const getCurrentPDFText = (): string => {
+    if (!selectedPDF) return "";
+
+    // This is the actual content being displayed in the PDF viewer
+    const rawText = `Chapter 4: Cardiovascular System
+
+The cardiovascular system consists of the heart, blood vessels, and blood. This intricate network is responsible for transporting oxygen, nutrients, hormones, and waste products throughout the body. The heart serves as the central pump, while the blood vessels form an extensive network of tubes that carry blood to and from every cell in the body.
+
+Heart Anatomy
+
+The heart is a muscular organ approximately the size of a fist, located in the mediastinum between the lungs. It consists of four chambers: two atria (upper chambers) and two ventricles (lower chambers). The right side of the heart pumps deoxygenated blood to the lungs, while the left side pumps oxygenated blood to the rest of the body.
+
+Cardiac Chambers
+
+- Right Atrium: Receives deoxygenated blood from the body via the superior and inferior vena cavae.
+- Right Ventricle: Pumps blood to the lungs through the pulmonary trunk.
+- Left Atrium: Receives oxygenated blood from the lungs via the pulmonary veins.
+- Left Ventricle: Pumps oxygenated blood to the body through the aorta.
+
+Blood Circulation
+
+Blood circulation follows two main pathways: pulmonary circulation (between heart and lungs) and systemic circulation (between heart and rest of the body). The cardiac cycle consists of two phases: systole (contraction) and diastole (relaxation).
+
+Cardiac Cycle
+
+During systole, the ventricles contract, forcing blood out of the heart. The left ventricle pumps oxygenated blood into the aorta, while the right ventricle pumps deoxygenated blood into the pulmonary trunk. During diastole, the ventricles relax and fill with blood from the atria.
+
+Heart Valves
+
+The heart contains four valves that ensure unidirectional blood flow:
+- Tricuspid valve: Between right atrium and right ventricle
+- Pulmonary valve: Between right ventricle and pulmonary trunk
+- Mitral (bicuspid) valve: Between left atrium and left ventricle
+- Aortic valve: Between left ventricle and aorta
+
+Clinical Significance
+
+Understanding cardiovascular physiology is crucial for diagnosing and treating heart disease, which remains the leading cause of death worldwide. Common cardiovascular conditions include:
+- Coronary artery disease
+- Heart failure
+- Arrhythmias
+- Hypertension
+- Valvular heart disease
+
+Proper assessment of cardiovascular function involves understanding normal physiology, recognizing pathological changes, and implementing appropriate therapeutic interventions.`;
+
+    return rawText;
+  };
+
+  // Function to get current PDF title
+  const getCurrentPDFTitle = (): string => {
+    if (!selectedPDF) return "";
+    return "Chapter 4: Cardiovascular System - Medical Textbook";
   };
 
   // Function to insert content into the current note
@@ -270,9 +355,100 @@ const Index = () => {
     }
   });
 
+  // Handle view switching
+  const handleNavigateToKnowledgeBank = () => {
+    setCurrentView('knowledge-bank');
+  };
+
+  const handleBackToNotebook = () => {
+    setCurrentView('notebook');
+    setSelectedKnowledgeNote(null);
+    setSelectedKnowledgeNoteData(null);
+  };
+
+  const handleViewNote = (noteId: string, noteData?: any) => {
+    setSelectedKnowledgeNote(noteId);
+    // If noteData is provided, use it; otherwise try to find it in publishedNotes
+    if (noteData) {
+      setSelectedKnowledgeNoteData(noteData);
+    } else {
+      const foundNote = publishedNotes.find(note => note.id === noteId);
+      setSelectedKnowledgeNoteData(foundNote);
+    }
+    setCurrentView('note-view');
+  };
+
+  const handlePublishNote = () => {
+    setCurrentView('publish-note');
+  };
+
+  const handlePublishFromNotepad = (noteData: { title: string; content: string }) => {
+    setNoteToPublish(noteData);
+    setCurrentView('publish-note');
+  };
+
+  const handleEditProfile = () => {
+    setCurrentView('user-profile');
+  };
+
+  const handleNotePublished = (publishedNote: any) => {
+    // Note is already published to global service by PublishNote component
+    // Clear the note to publish
+    setNoteToPublish(null);
+    // Navigate back to Knowledge Bank to see the published note
+    setCurrentView('knowledge-bank');
+
+    console.log('Note published successfully:', publishedNote.title);
+  };
+
+  // Render different views based on current view
+  if (currentView === 'knowledge-bank') {
+    return (
+      <KnowledgeBank
+        onViewNote={handleViewNote}
+        onPublishNote={handlePublishNote}
+      />
+    );
+  }
+
+  if (currentView === 'note-view' && selectedKnowledgeNote) {
+    return (
+      <NoteView
+        noteId={selectedKnowledgeNote}
+        onBack={handleBackToNotebook}
+        noteData={selectedKnowledgeNoteData}
+      />
+    );
+  }
+
+  if (currentView === 'publish-note') {
+    return (
+      <PublishNote
+        onBack={() => {
+          setNoteToPublish(null);
+          handleBackToNotebook();
+        }}
+        noteData={noteToPublish}
+        onNotePublished={handleNotePublished}
+      />
+    );
+  }
+
+  if (currentView === 'user-profile') {
+    return (
+      <UserProfile
+        onBack={handleBackToNotebook}
+      />
+    );
+  }
+
   return (
     <div className="h-screen bg-surface flex flex-col overflow-hidden">
-      <Header />
+      <Header
+        onNavigateToKnowledgeBank={handleNavigateToKnowledgeBank}
+        onEditProfile={handleEditProfile}
+        currentView={currentView}
+      />
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar for notes and PDFs */}
@@ -291,6 +467,10 @@ const Index = () => {
           notesData={notesData}
           onCreateNote={handleCreateNote}
           onDeleteNote={handleDeleteNote}
+          onPDFUpload={handlePDFUpload}
+          pdfFile={getCurrentPDFFile()}
+          pdfText={getCurrentPDFText()}
+          pdfTitle={getCurrentPDFTitle()}
         />
         
         {/* Main content area with resizable split view */}
@@ -305,6 +485,7 @@ const Index = () => {
               onTextHighlight={setHighlightedText}
               onAIActionRequest={() => setAiPanelVisible(true)}
               onInsertToNote={handleInsertToNote}
+              pdfFile={getCurrentPDFFile()}
             />
           </div>
 
@@ -344,6 +525,7 @@ const Index = () => {
               noteData={selectedNote ? notesData[selectedNote] : undefined}
               onNoteUpdate={handleNoteUpdate}
               onOpenYouTubeProcessor={() => setYoutubeProcessorVisible(true)}
+              onPublishNote={handlePublishFromNotepad}
             />
 
             {/* AI Panel */}

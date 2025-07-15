@@ -9,6 +9,7 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<AuthResponse>;
   logout: () => void;
   updateProfile: (updates: Partial<User>) => Promise<AuthResponse>;
+  updateUser: (updates: Partial<User>) => Promise<void>;
   getUserDisplayName: () => string;
   getRoleDisplay: () => string;
 }
@@ -69,6 +70,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return response;
   };
 
+  const updateUser = async (updates: Partial<User>) => {
+    if (user) {
+      // Update local state immediately
+      const updatedUser = { ...user, ...updates };
+      setUser(updatedUser);
+
+      // Persist to localStorage through authService
+      try {
+        await authService.updateProfile(updates);
+      } catch (error) {
+        console.error('Failed to persist user updates:', error);
+      }
+    }
+  };
+
   const getUserDisplayName = (): string => {
     return authService.getUserDisplayName();
   };
@@ -85,6 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     updateProfile,
+    updateUser,
     getUserDisplayName,
     getRoleDisplay,
   };

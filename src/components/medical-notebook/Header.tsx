@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Download, Share, Settings, User, Stethoscope } from "lucide-react";
+import { FileText, Download, Share, Settings, User, Stethoscope, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -7,7 +7,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { SettingsPanel } from "./SettingsPanel";
 import { UserProfile } from "@/components/auth/UserProfile";
 
-export const Header = () => {
+interface HeaderProps {
+  onNavigateToKnowledgeBank?: () => void;
+  onEditProfile?: () => void;
+  currentView?: string;
+}
+
+export const Header = ({ onNavigateToKnowledgeBank, onEditProfile, currentView }: HeaderProps) => {
   const { toast } = useToast();
   const { settings } = useSettings();
   const { isAuthenticated } = useAuth();
@@ -123,16 +129,28 @@ export const Header = () => {
           Download
         </Button>
         
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={handleShare}
           className="gap-2"
         >
           <Share className="h-4 w-4" />
           Share
         </Button>
-        
+
+        {onNavigateToKnowledgeBank && (
+          <Button
+            variant={currentView === 'knowledge-bank' ? "default" : "outline"}
+            size="sm"
+            onClick={onNavigateToKnowledgeBank}
+            className="gap-2"
+          >
+            <BookOpen className="h-4 w-4" />
+            Knowledge Bank
+          </Button>
+        )}
+
         <Button
           variant="ghost"
           size="sm"
@@ -142,7 +160,7 @@ export const Header = () => {
         </Button>
 
         {isAuthenticated ? (
-          <UserProfile />
+          <UserProfile onEditProfile={onEditProfile} />
         ) : (
           <Button variant="ghost" size="sm">
             <User className="h-4 w-4" />

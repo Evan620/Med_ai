@@ -11,9 +11,10 @@ interface PDFViewerProps {
   onTextHighlight: (text: string) => void;
   onAIActionRequest: () => void;
   onInsertToNote?: (content: string) => void;
+  pdfFile?: File;
 }
 
-export const PDFViewer = ({ selectedPDF, onTextHighlight, onAIActionRequest, onInsertToNote }: PDFViewerProps) => {
+export const PDFViewer = ({ selectedPDF, onTextHighlight, onAIActionRequest, onInsertToNote, pdfFile }: PDFViewerProps) => {
   const [zoom, setZoom] = useState(100);
   const [showHighlightActions, setShowHighlightActions] = useState(false);
   const [selectedText, setSelectedText] = useState("");
@@ -23,6 +24,8 @@ export const PDFViewer = ({ selectedPDF, onTextHighlight, onAIActionRequest, onI
   const { toast } = useToast();
   const { actualTheme } = useTheme();
   const { settings } = useSettings();
+
+
 
   const handleTextSelection = () => {
     const selection = window.getSelection();
@@ -381,6 +384,8 @@ export const PDFViewer = ({ selectedPDF, onTextHighlight, onAIActionRequest, onI
           </div>
         )}
       </div>
+
+
     </div>
   );
 };
