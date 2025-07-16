@@ -298,31 +298,44 @@ export const KnowledgeBank = ({ onViewNote, onPublishNote }: KnowledgeBankProps)
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 animate-fade-in">
-      {/* Modern Header with Glassmorphism */}
-      <div className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-gray-200/50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 animate-fade-in relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.02]">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }} />
+      </div>
+
+      {/* Enhanced Header with Glassmorphism */}
+      <div className="sticky top-0 z-50 backdrop-blur-2xl bg-white/85 border-b border-gray-200/30 shadow-xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-indigo-500/5"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-75"></div>
-                <div className="relative p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl">
-                  <BookOpen className="h-7 w-7 text-white" />
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl blur-lg opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative p-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-3xl shadow-2xl transform group-hover:scale-105 transition-transform duration-300">
+                  <BookOpen className="h-8 w-8 text-white" />
                 </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
+              <div className="space-y-1">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent leading-tight">
                   Medicine Knowledge Bank
                 </h1>
-                <p className="text-gray-600 font-medium">Discover and share medical knowledge with the global community</p>
+                <p className="text-gray-600 font-medium text-lg">Discover and share medical knowledge with the global community</p>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100/80 rounded-full px-3 py-1">
+                    <Users className="h-4 w-4" />
+                    <span className="font-medium">{filteredNotes.length} notes</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100/80 rounded-full px-3 py-1">
+                    <TrendingUp className="h-4 w-4" />
+                    <span className="font-medium">Growing daily</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
-                <Users className="h-4 w-4" />
-                <span>{filteredNotes.length} notes</span>
-              </div>
-
+            <div className="flex items-center gap-4">
               {/* Test Multi-User Button (for development) */}
               {process.env.NODE_ENV === 'development' && (
                 <Button
@@ -338,18 +351,18 @@ export const KnowledgeBank = ({ onViewNote, onPublishNote }: KnowledgeBankProps)
                       description: "Added sample notes from multiple users for testing.",
                     });
                   }}
-                  className="text-xs"
+                  className="text-xs border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200"
                 >
                   🧪 Test Multi-User
                 </Button>
               )}
 
               <Button
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 px-6 py-3 text-base font-semibold rounded-2xl"
                 onClick={onPublishNote}
                 title="Publish a new note or from your notepad"
               >
-                <Share2 className="h-4 w-4 mr-2" />
+                <Share2 className="h-5 w-5 mr-2" />
                 Publish Note
               </Button>
             </div>
@@ -357,200 +370,216 @@ export const KnowledgeBank = ({ onViewNote, onPublishNote }: KnowledgeBankProps)
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Modern Search and Filters */}
-        <div className="mb-10 animate-slide-up">
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-200/50">
-            <div className="flex flex-col lg:flex-row gap-4">
-              {/* Enhanced Search Bar */}
-              <div className="flex-1 relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
-                  <Input
-                    placeholder="Search medical notes, authors, specialties..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 pr-4 py-3 bg-white/90 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-200 shadow-sm"
-                  />
-                  {searchTerm && (
-                    <button
-                      onClick={() => setSearchTerm("")}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      ×
-                    </button>
-                  )}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+        {/* Enhanced Search and Filters */}
+        <div className="mb-12 animate-slide-up">
+          <div className="relative">
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 rounded-3xl blur-xl"></div>
+
+            <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-gray-200/30">
+              <div className="flex flex-col lg:flex-row gap-6">
+                {/* Enhanced Search Bar */}
+                <div className="flex-1 relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative">
+                    <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400 group-hover:text-blue-500 transition-colors duration-200" />
+                    <Input
+                      placeholder="Search medical notes, authors, specialties, conditions..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-14 pr-12 py-4 bg-white/95 border-2 border-gray-200/50 rounded-2xl text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-200 shadow-lg text-lg font-medium"
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm("")}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Enhanced Filter Dropdowns */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="w-full sm:w-56 bg-white/95 border-2 border-gray-200/50 rounded-2xl py-4 px-5 hover:border-blue-300 transition-colors duration-200 shadow-lg">
+                      <div className="flex items-center gap-3">
+                        <Filter className="h-5 w-5 text-gray-500" />
+                        <SelectValue className="font-medium" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-gray-200/50 shadow-2xl bg-white/95 backdrop-blur-xl">
+                      {CATEGORIES.map(category => (
+                        <SelectItem key={category} value={category} className="rounded-xl py-3 px-4 font-medium hover:bg-blue-50 transition-colors">
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-full sm:w-48 bg-white/95 border-2 border-gray-200/50 rounded-2xl py-4 px-5 hover:border-blue-300 transition-colors duration-200 shadow-lg">
+                      <SelectValue className="font-medium" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-gray-200/50 shadow-2xl bg-white/95 backdrop-blur-xl">
+                      <SelectItem value="trending" className="rounded-xl py-3 px-4 hover:bg-orange-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <TrendingUp className="h-5 w-5 text-orange-500" />
+                          <span className="font-medium">Trending</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="newest" className="rounded-xl py-3 px-4 hover:bg-blue-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <Clock className="h-5 w-5 text-blue-500" />
+                          <span className="font-medium">Newest</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="popular" className="rounded-xl py-3 px-4 hover:bg-red-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <Heart className="h-5 w-5 text-red-500" />
+                          <span className="font-medium">Most Liked</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="bookmarked" className="rounded-xl py-3 px-4 hover:bg-green-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <Bookmark className="h-5 w-5 text-green-500" />
+                          <span className="font-medium">Most Saved</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
-              {/* Modern Filter Dropdowns */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-full sm:w-52 bg-white/90 border-2 border-gray-200 rounded-xl py-3 px-4 hover:border-blue-300 transition-colors duration-200 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <Filter className="h-4 w-4 text-gray-500" />
-                      <SelectValue />
+              {/* Enhanced Search Results Summary */}
+              {searchTerm && (
+                <div className="mt-6 pt-6 border-t border-gray-200/50">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-xl">
+                      <Search className="h-5 w-5 text-blue-600" />
                     </div>
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-gray-200 shadow-xl">
-                    {CATEGORIES.map(category => (
-                      <SelectItem key={category} value={category} className="rounded-lg">
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-full sm:w-44 bg-white/90 border-2 border-gray-200 rounded-xl py-3 px-4 hover:border-blue-300 transition-colors duration-200 shadow-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-gray-200 shadow-xl">
-                    <SelectItem value="trending" className="rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-orange-500" />
-                        <span>Trending</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="newest" className="rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-blue-500" />
-                        <span>Newest</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="popular" className="rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Heart className="h-4 w-4 text-red-500" />
-                        <span>Most Liked</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="bookmarked" className="rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Bookmark className="h-4 w-4 text-green-500" />
-                        <span>Most Saved</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                    <p className="text-gray-700 font-medium">
+                      Found <span className="font-bold text-blue-600 text-lg">{filteredNotes.length}</span> notes matching
+                      <span className="font-semibold text-gray-900"> "{searchTerm}"</span>
+                      {selectedCategory !== "All Categories" && (
+                        <span> in <span className="font-semibold text-indigo-600">{selectedCategory}</span></span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-
-            {/* Search Results Summary */}
-            {searchTerm && (
-              <div className="mt-4 pt-4 border-t border-gray-200/50">
-                <p className="text-sm text-gray-600">
-                  Found <span className="font-semibold text-blue-600">{filteredNotes.length}</span> notes matching
-                  <span className="font-medium"> "{searchTerm}"</span>
-                  {selectedCategory !== "All Categories" && (
-                    <span> in <span className="font-medium">{selectedCategory}</span></span>
-                  )}
-                </p>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Modern Featured Notes */}
+        {/* Enhanced Featured Notes */}
         {filteredNotes.some(note => note.featured) && (
-          <div className="mb-16 animate-slide-up">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl shadow-lg">
-                <Star className="h-6 w-6 text-white" />
+          <div className="mb-20 animate-slide-up">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-2xl blur-lg opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative p-3 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-2xl shadow-2xl">
+                  <Star className="h-7 w-7 text-white" />
+                </div>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Featured Notes</h2>
-                <p className="text-gray-600">Curated medical insights from verified professionals</p>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-orange-800 to-red-800 bg-clip-text text-transparent">Featured Notes</h2>
+                <p className="text-gray-600 text-lg font-medium">Curated medical insights from verified professionals</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
               {filteredNotes.filter(note => note.featured).slice(0, 2).map((note, index) => (
                 <Card
                   key={note.id}
-                  className="group relative overflow-hidden bg-white hover:shadow-2xl transition-all duration-500 cursor-pointer border-0 shadow-lg hover:scale-[1.02] animate-scale-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="group relative overflow-hidden bg-white/90 backdrop-blur-sm hover:shadow-3xl transition-all duration-500 cursor-pointer border-0 shadow-xl hover:scale-[1.03] animate-scale-in rounded-3xl"
+                  style={{ animationDelay: `${index * 150}ms` }}
                   onClick={() => handleViewNote(note.id, note)}
                 >
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  {/* Enhanced Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-indigo-500/5 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                  {/* Featured Badge */}
-                  <div className="absolute top-4 right-4 z-10">
-                    <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 shadow-lg">
-                      <Star className="h-3 w-3 mr-1" />
+                  {/* Animated Border Glow */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-orange-500/20 to-red-500/20 rounded-3xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                  {/* Enhanced Featured Badge */}
+                  <div className="absolute top-6 right-6 z-10">
+                    <Badge className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white border-0 shadow-xl px-3 py-1.5 rounded-full font-semibold">
+                      <Star className="h-4 w-4 mr-1.5" />
                       Featured
                     </Badge>
                   </div>
 
-                  <CardHeader className="pb-4 relative z-10">
-                    <div className="flex items-start justify-between mb-3">
+                  <CardHeader className="pb-6 relative z-10 p-8">
+                    <div className="flex items-start justify-between mb-4">
                       <div className="flex flex-wrap gap-2">
                         {note.tags.slice(0, 2).map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">
+                          <Badge key={tag} variant="secondary" className="text-sm bg-blue-50/80 text-blue-700 hover:bg-blue-100 transition-colors px-3 py-1 rounded-full font-medium">
                             {tag}
                           </Badge>
                         ))}
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-gray-500 bg-gray-50 rounded-full px-2 py-1">
-                        <Eye className="h-3 w-3" />
-                        <span>{note.views.toLocaleString()}</span>
+                      <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100/80 rounded-full px-3 py-2">
+                        <Eye className="h-4 w-4" />
+                        <span className="font-semibold">{note.views.toLocaleString()}</span>
                       </div>
                     </div>
-                    <CardTitle className="text-xl leading-tight text-gray-900 group-hover:text-blue-700 transition-colors duration-200">
+                    <CardTitle className="text-2xl leading-tight text-gray-900 group-hover:text-blue-700 transition-colors duration-300 font-bold mb-3">
                       {note.title}
                     </CardTitle>
                   </CardHeader>
 
-                  <CardContent className="pt-0 relative z-10">
-                    <p className="text-gray-600 text-sm mb-6 line-clamp-3 leading-relaxed">{note.excerpt}</p>
+                  <CardContent className="pt-0 relative z-10 px-8">
+                    <p className="text-gray-600 text-base mb-8 line-clamp-3 leading-relaxed font-medium">{note.excerpt}</p>
 
-                    {/* Author Section */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
+                    {/* Enhanced Author Section */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-4">
                         <div className="relative">
-                          <Avatar className="h-10 w-10 ring-2 ring-white shadow-md">
-                            <AvatarFallback className="text-sm bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
+                          <Avatar className="h-12 w-12 ring-3 ring-white shadow-xl">
+                            <AvatarFallback className="text-base bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-white font-bold">
                               {note.author.name.split(' ').map(n => n[0]).join('')}
                             </AvatarFallback>
                           </Avatar>
                           {note.author.verified && (
-                            <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1">
-                              <Award className="h-3 w-3 text-white" />
+                            <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full p-1.5 shadow-lg">
+                              <Award className="h-4 w-4 text-white" />
                             </div>
                           )}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">{note.author.name}</p>
-                          <p className="text-xs text-gray-500">{note.author.credentials}</p>
+                          <p className="text-base font-bold text-gray-900">{note.author.name}</p>
+                          <p className="text-sm text-gray-600 font-medium">{note.author.credentials}</p>
                           {note.author.institution && (
-                            <p className="text-xs text-gray-400">{note.author.institution}</p>
+                            <p className="text-sm text-gray-500">{note.author.institution}</p>
                           )}
                         </div>
                       </div>
 
-                      {/* Engagement Stats */}
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-1 hover:text-red-500 transition-colors">
-                          <Heart className="h-4 w-4" />
-                          <span>{note.likes}</span>
+                      {/* Enhanced Engagement Stats */}
+                      <div className="flex items-center gap-6 text-sm">
+                        <div className="flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors cursor-pointer">
+                          <Heart className="h-5 w-5" />
+                          <span className="font-semibold">{note.likes}</span>
                         </div>
-                        <div className="flex items-center gap-1 hover:text-blue-500 transition-colors">
-                          <MessageCircle className="h-4 w-4" />
-                          <span>{note.comments || 0}</span>
+                        <div className="flex items-center gap-2 text-blue-500 hover:text-blue-600 transition-colors cursor-pointer">
+                          <MessageCircle className="h-5 w-5" />
+                          <span className="font-semibold">{note.comments || 0}</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Read More Indicator */}
-                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-xs text-gray-400">
-                        <Calendar className="h-3 w-3" />
-                        <span>{note.publishedAt}</span>
+                    {/* Enhanced Read More Indicator */}
+                    <div className="mt-6 pt-6 border-t border-gray-200/50 flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Calendar className="h-4 w-4" />
+                        <span className="font-medium">{note.publishedAt}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-blue-600 group-hover:text-blue-700 font-medium">
-                        <span>Read more</span>
-                        <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
+                      <div className="flex items-center gap-2 text-base text-blue-600 group-hover:text-blue-700 font-semibold">
+                        <span>Read full note</span>
+                        <ChevronRight className="h-5 w-5 group-hover:translate-x-2 transition-transform duration-300" />
                       </div>
                     </div>
                   </CardContent>
@@ -560,24 +589,32 @@ export const KnowledgeBank = ({ onViewNote, onPublishNote }: KnowledgeBankProps)
           </div>
         )}
 
-        {/* Modern Notes Grid */}
-        <div className="mb-8 animate-slide-up">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                All Notes
-              </h2>
-              <p className="text-gray-600">
-                {filteredNotes.length} medical notes from the community
-              </p>
+        {/* Enhanced Notes Grid */}
+        <div className="mb-12 animate-slide-up">
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-600 to-gray-800 rounded-2xl blur opacity-75"></div>
+                <div className="relative p-3 bg-gradient-to-r from-gray-600 to-gray-800 rounded-2xl shadow-xl">
+                  <BookOpen className="h-6 w-6 text-white" />
+                </div>
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent">
+                  All Notes
+                </h2>
+                <p className="text-gray-600 text-lg font-medium">
+                  {filteredNotes.length} medical notes from the community
+                </p>
+              </div>
             </div>
 
-            {/* View Toggle */}
-            <div className="hidden md:flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-              <button className="px-3 py-1 rounded-md bg-white shadow-sm text-sm font-medium text-gray-700">
+            {/* Enhanced View Toggle */}
+            <div className="hidden md:flex items-center gap-2 bg-gray-100/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg">
+              <button className="px-4 py-2 rounded-xl bg-white shadow-md text-sm font-semibold text-gray-700 transition-all duration-200 hover:shadow-lg">
                 Grid
               </button>
-              <button className="px-3 py-1 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700">
+              <button className="px-4 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-white/50 transition-all duration-200">
                 List
               </button>
             </div>
@@ -588,83 +625,86 @@ export const KnowledgeBank = ({ onViewNote, onPublishNote }: KnowledgeBankProps)
           {filteredNotes.map((note, index) => (
             <Card
               key={note.id}
-              className="group relative overflow-hidden bg-white hover:shadow-2xl transition-all duration-500 cursor-pointer border-0 shadow-md hover:scale-[1.02] animate-scale-in"
-              style={{ animationDelay: `${index * 50}ms` }}
+              className="group relative overflow-hidden bg-white/95 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 cursor-pointer border-0 shadow-lg hover:scale-[1.03] animate-scale-in rounded-2xl"
+              style={{ animationDelay: `${index * 75}ms` }}
               onClick={() => handleViewNote(note.id, note)}
             >
-              {/* Hover Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              {/* Enhanced Hover Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 via-indigo-500/5 to-purple-500/8 opacity-0 group-hover:opacity-100 transition-opacity duration-400"></div>
 
-              <CardHeader className="pb-4 relative z-10">
-                <div className="flex items-start justify-between mb-3">
+              {/* Subtle Border Glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-indigo-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-400"></div>
+
+              <CardHeader className="pb-5 relative z-10 p-6">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+                    <Badge variant="secondary" className="text-sm bg-gray-100/80 text-gray-700 hover:bg-gray-200 transition-colors px-3 py-1 rounded-full font-medium">
                       {note.category}
                     </Badge>
-                    <Badge className={`text-xs ${getDifficultyColor(note.difficulty)}`}>
+                    <Badge className={`text-sm px-3 py-1 rounded-full font-medium ${getDifficultyColor(note.difficulty)}`}>
                       {note.difficulty}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-500 bg-gray-50 rounded-full px-2 py-1">
-                    <Eye className="h-3 w-3" />
-                    <span>{note.views.toLocaleString()}</span>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100/80 rounded-full px-3 py-1.5">
+                    <Eye className="h-4 w-4" />
+                    <span className="font-semibold">{note.views.toLocaleString()}</span>
                   </div>
                 </div>
-                <CardTitle className="text-lg leading-tight text-gray-900 group-hover:text-blue-700 transition-colors duration-200 line-clamp-2">
+                <CardTitle className="text-xl leading-tight text-gray-900 group-hover:text-blue-700 transition-colors duration-300 line-clamp-2 font-bold mb-3">
                   {note.title}
                 </CardTitle>
-                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed mt-2">{note.excerpt}</p>
+                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed font-medium">{note.excerpt}</p>
               </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex flex-wrap gap-1 mb-4">
+              <CardContent className="pt-0 px-6">
+                <div className="flex flex-wrap gap-2 mb-5">
                   {note.tags.slice(0, 3).map(tag => (
-                    <Badge key={tag} variant="outline" className="text-xs">
+                    <Badge key={tag} variant="outline" className="text-xs px-2 py-1 rounded-full border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-colors">
                       {tag}
                     </Badge>
                   ))}
                   {note.tags.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="text-xs px-2 py-1 rounded-full border-gray-300 text-gray-500">
                       +{note.tags.length - 3}
                     </Badge>
                   )}
                 </div>
-                
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="text-xs">
+
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8 ring-2 ring-gray-200">
+                      <AvatarFallback className="text-sm bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
                         {note.author.name.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs font-medium">{note.author.name}</span>
-                        {note.author.verified && <Award className="h-3 w-3 text-blue-500" />}
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-semibold text-gray-900">{note.author.name}</span>
+                        {note.author.verified && <Award className="h-4 w-4 text-blue-500" />}
                       </div>
-                      <div className="text-xs text-gray-500">{note.author.credentials}</div>
+                      <div className="text-xs text-gray-600 font-medium">{note.author.credentials}</div>
                       {note.author.institution && (
-                        <div className="text-xs text-gray-400">{note.author.institution}</div>
+                        <div className="text-xs text-gray-500">{note.author.institution}</div>
                       )}
                     </div>
                   </div>
-                  <span className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 bg-gray-100 rounded-full px-2 py-1 font-medium">
                     {Math.ceil(note.content.length / 200)} min read
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-5">
+                  <span className="flex items-center gap-2 bg-gray-100/80 rounded-full px-3 py-1">
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium">{formatDate(note.publishedAt)}</span>
+                  </span>
+                  <span className="flex items-center gap-2 bg-gray-100/80 rounded-full px-3 py-1">
+                    <Eye className="h-4 w-4" />
+                    <span className="font-medium">{note.views.toLocaleString()}</span>
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {formatDate(note.publishedAt)}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Eye className="h-3 w-3" />
-                    {note.views.toLocaleString()}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200/50">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -672,10 +712,10 @@ export const KnowledgeBank = ({ onViewNote, onPublishNote }: KnowledgeBankProps)
                         e.stopPropagation();
                         handleLike(note.id);
                       }}
-                      className="h-8 px-2 hover:text-red-600"
+                      className="h-9 px-3 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200"
                     >
-                      <Heart className="h-4 w-4 mr-1" />
-                      {note.likes}
+                      <Heart className="h-4 w-4 mr-1.5" />
+                      <span className="font-semibold">{note.likes}</span>
                     </Button>
                     <Button
                       variant="ghost"
@@ -684,13 +724,13 @@ export const KnowledgeBank = ({ onViewNote, onPublishNote }: KnowledgeBankProps)
                         e.stopPropagation();
                         handleBookmark(note.id);
                       }}
-                      className="h-8 px-2 hover:text-blue-600"
+                      className="h-9 px-3 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200"
                     >
-                      <Bookmark className="h-4 w-4 mr-1" />
-                      {note.bookmarks}
+                      <Bookmark className="h-4 w-4 mr-1.5" />
+                      <span className="font-semibold">{note.bookmarks}</span>
                     </Button>
                   </div>
-                  <Button variant="ghost" size="sm" className="h-8 px-2">
+                  <Button variant="ghost" size="sm" className="h-9 px-3 hover:bg-gray-100 rounded-xl transition-all duration-200">
                     <Share2 className="h-4 w-4" />
                   </Button>
                 </div>
